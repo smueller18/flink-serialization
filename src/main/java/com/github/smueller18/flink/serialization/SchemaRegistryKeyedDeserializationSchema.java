@@ -6,8 +6,10 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.streaming.util.serialization.KeyedDeserializationSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.kafka.common.errors.SerializationException;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Properties;
 
 /**
@@ -17,7 +19,7 @@ import java.util.Properties;
 
 public class SchemaRegistryKeyedDeserializationSchema implements KeyedDeserializationSchema<GenericKeyValueRecord> {
 
-    private Properties vProps;
+    private Properties props;
     private transient KafkaAvroDecoder decoder;
 
     /***
@@ -30,7 +32,7 @@ public class SchemaRegistryKeyedDeserializationSchema implements KeyedDeserializ
      *
      */
     public SchemaRegistryKeyedDeserializationSchema(Properties props) {
-        this.vProps = props;
+        this.props = props;
     }
 
     @Override
@@ -38,12 +40,23 @@ public class SchemaRegistryKeyedDeserializationSchema implements KeyedDeserializ
             throws IOException {
 
         if(decoder == null)
-            decoder = new KafkaAvroDecoder(new VerifiableProperties(this.vProps));
+            decoder = new KafkaAvroDecoder(new VerifiableProperties(this.props));
 
-        return new GenericKeyValueRecord(
-                (GenericRecord) decoder.fromBytes(messageKey),
-                (GenericRecord) decoder.fromBytes(message)
-        );
+        try {
+            return new GenericKeyValueRecord(
+                    (GenericRecord) decoder.fromBytes(messageKey),
+                    (GenericRecord) decoder.fromBytes(message)
+            );
+        }
+        catch(Exception e) {
+            if (e.getCause() instanceof ConnectException)
+                throw new ConnectException(
+                        String.format("Connection to schema registry '%s' could not be established.",
+                                this.props.getProperty("schema.registry.url")
+                        )
+                );
+            else throw e;
+        }
     }
 
     @Override
