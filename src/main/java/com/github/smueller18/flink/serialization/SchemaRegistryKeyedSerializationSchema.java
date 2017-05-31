@@ -1,8 +1,9 @@
 package com.github.smueller18.flink.serialization;
 
-import kafka.serializer.Encoder;
 import kafka.utils.VerifiableProperties;
 import org.apache.flink.streaming.util.serialization.KeyedSerializationSchema;
+
+import java.util.Properties;
 
 /**
  * Copyright 2017 Stephan Müller
@@ -10,35 +11,40 @@ import org.apache.flink.streaming.util.serialization.KeyedSerializationSchema;
  */
 public class SchemaRegistryKeyedSerializationSchema implements KeyedSerializationSchema<GenericKeyValueRecord> {
 
-    private String topic;
-    private VerifiableProperties vProps;
+    private Properties props;
 
-    private transient Encoder keyEncoder;
-    private transient Encoder valueEncoder;
+    private transient KafkaAvroKeyEncoder keyEncoder;
+    private transient KafkaAvroValueEncoder valueEncoder;
 
-    public SchemaRegistryKeyedSerializationSchema(VerifiableProperties vProps) {
-        this.vProps = vProps;
+    /***
+     *
+     * @param props properties for {@link KafkaAvroKeyEncoder} and {@link KafkaAvroValueEncoder}
+     *              schema.registry.url ({@link String}):
+     *                  Comma-separated list of URLs for schema registry instances that can be used to register or look up schemas
+     *              max.schemas.per.subject ({@link Integer}, default: 1000):
+     *                  Maximum number of schemas to create or cache locally
+     *
+     */
+    public SchemaRegistryKeyedSerializationSchema(Properties props) {
+        this.props = props;
     }
 
     @Override
     public byte[] serializeKey(GenericKeyValueRecord genericKeyValueRecord) {
 
-
         if (this.keyEncoder == null)
-            this.keyEncoder = new KafkaAvroKeyEncoder(this.vProps);
+            this.keyEncoder = new KafkaAvroKeyEncoder(new VerifiableProperties(this.props));
 
-        return ((KafkaAvroKeyEncoder) this.keyEncoder).toBytes(genericKeyValueRecord);
-
+        return this.keyEncoder.toBytes(genericKeyValueRecord);
     }
 
     @Override
     public byte[] serializeValue(GenericKeyValueRecord genericKeyValueRecord) {
 
         if (this.valueEncoder == null)
-            this.valueEncoder = new KafkaAvroValueEncoder(vProps);
+            this.valueEncoder = new KafkaAvroValueEncoder(new VerifiableProperties(this.props));
 
-        return ((KafkaAvroValueEncoder) this.valueEncoder).toBytes(genericKeyValueRecord);
-
+        return this.valueEncoder.toBytes(genericKeyValueRecord);
     }
 
     @Override

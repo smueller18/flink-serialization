@@ -8,18 +8,29 @@ import org.apache.flink.streaming.util.serialization.KeyedDeserializationSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Copyright 2017 Stephan Müller
  * License: MIT
  */
+
 public class SchemaRegistryKeyedDeserializationSchema implements KeyedDeserializationSchema<GenericKeyValueRecord> {
 
-    private VerifiableProperties vProps;
+    private Properties vProps;
     private transient KafkaAvroDecoder decoder;
 
-    public SchemaRegistryKeyedDeserializationSchema(VerifiableProperties vProps) {
-        this.vProps = vProps;
+    /***
+     *
+     * @param props properties for {@link KafkaAvroDecoder}
+     *              schema.registry.url ({@link String}):
+     *                  Comma-separated list of URLs for schema registry instances that can be used to register or look up schemas
+     *              max.schemas.per.subject ({@link Integer}, default: 1000):
+     *                  Maximum number of schemas to create or cache locally
+     *
+     */
+    public SchemaRegistryKeyedDeserializationSchema(Properties props) {
+        this.vProps = props;
     }
 
     @Override
@@ -27,7 +38,7 @@ public class SchemaRegistryKeyedDeserializationSchema implements KeyedDeserializ
             throws IOException {
 
         if(decoder == null)
-            decoder = new KafkaAvroDecoder(this.vProps);
+            decoder = new KafkaAvroDecoder(new VerifiableProperties(this.vProps));
 
         return new GenericKeyValueRecord(
                 (GenericRecord) decoder.fromBytes(messageKey),
