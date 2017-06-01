@@ -34,6 +34,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.smueller18</groupId>
+            <artifactId>avro-builder</artifactId>
+            <version>0.4</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka_${scala.version}</artifactId>
             <version>${kafka.version}</version>
