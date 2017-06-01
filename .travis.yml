@@ -1,0 +1,15 @@
+language: bash
+
+script:
+    - 'if [ -n "$TRAVIS_PULL_REQUEST_BRANCH" ]; then
+          echo Building maven package by invoking https://jitpack.io/com/github/smueller18/flink-serialization/$TRAVIS_PULL_REQUEST_BRANCH-SNAPSHOT ...;
+          curl -L https://jitpack.io/com/github/smueller18/flink-serialization/$TRAVIS_PULL_REQUEST_BRANCH-SNAPSHOT;
+      fi'
+    - 'if [ -n "$TRAVIS_BRANCH" ]; then
+          echo Building maven package by invoking https://jitpack.io/com/github/smueller18/flink-serialization/$TRAVIS_BRANCH-SNAPSHOT ...;
+          curl -L https://jitpack.io/com/github/smueller18/flink-serialization/$TRAVIS_BRANCH-SNAPSHOT;
+      fi'
+    - 'if [ -n "$TRAVIS_TAG" ]; then
+          echo Building maen package by invoking https://jitpack.io/com/github/smueller18/flink-serialization/$TRAVIS_TAG ...;
+          curl -L https://jitpack.io/com/github/smueller18/flink-serialization/$TRAVIS_TAG;
+      fi'
