@@ -1,5 +1,8 @@
 language: bash
 
+notifications:
+  email: false
+
 script:
     - 'if [ -n "$TRAVIS_PULL_REQUEST_BRANCH" ]; then
           echo Building maven package by invoking https://jitpack.io/com/github/smueller18/flink-serialization/$TRAVIS_PULL_REQUEST_BRANCH-SNAPSHOT ...;
