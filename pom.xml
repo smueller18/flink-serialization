@@ -6,13 +6,14 @@
 
     <groupId>com.github.smueller18</groupId>
     <artifactId>flink-serialization</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Flink-Serialization</name>
     <url>https://github.com/smueller18/flink-serialization</url>
 
     <properties>
+        <avro.builder.version>236b12698a</avro.builder.version>
         <kafka.version>0.10.2.1</kafka.version>
         <avro.version>1.8.1</avro.version>
         <flink.version>1.2.0</flink.version>
@@ -33,6 +34,11 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.smueller18</groupId>
+            <artifactId>avro-builder</artifactId>
+            <version>${avro.builder.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka_${scala.version}</artifactId>
