@@ -10,7 +10,7 @@ import java.util.Properties;
  * Copyright 2017 Stephan Müller
  * License: MIT
  */
-public class AvroBuilderKeyedSerializationSchema implements KeyedSerializationSchema<AvroBuilder> {
+public class AvroBuilderKeyedSerializationSchema<T extends AvroBuilder> implements KeyedSerializationSchema<T> {
 
     private Properties props;
 
@@ -31,7 +31,7 @@ public class AvroBuilderKeyedSerializationSchema implements KeyedSerializationSc
     }
 
     @Override
-    public byte[] serializeKey(AvroBuilder avroBuilder) {
+    public byte[] serializeKey(T avroBuilder) {
 
         if (this.keyEncoder == null)
             this.keyEncoder = new KafkaAvroKeyEncoder(new VerifiableProperties(this.props));
@@ -40,7 +40,7 @@ public class AvroBuilderKeyedSerializationSchema implements KeyedSerializationSc
     }
 
     @Override
-    public byte[] serializeValue(AvroBuilder avroBuilder) {
+    public byte[] serializeValue(T avroBuilder) {
 
         if (this.valueEncoder == null)
             this.valueEncoder = new KafkaAvroValueEncoder(new VerifiableProperties(this.props));
@@ -49,7 +49,7 @@ public class AvroBuilderKeyedSerializationSchema implements KeyedSerializationSc
     }
 
     @Override
-    public String getTargetTopic(AvroBuilder avroBuilder) {
+    public String getTargetTopic(T avroBuilder) {
         return null;
     }
 
