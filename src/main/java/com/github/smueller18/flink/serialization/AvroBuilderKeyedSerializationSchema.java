@@ -55,9 +55,9 @@ public class AvroBuilderKeyedSerializationSchema<T extends AvroBuilder> implemen
     @Override
     public byte[] serializeKey(T avroBuilderObject) {
 
-        if (this.valueSerializer == null) {
-            this.valueSerializer = new KafkaAvroSerializer();
-            this.valueSerializer.configure(this.configs, true);
+        if (this.keySerializer == null) {
+            this.keySerializer = new KafkaAvroSerializer();
+            this.keySerializer.configure(this.configs, true);
         }
 
         return this.keySerializer.serialize(AvroBuilder.getTopicName(avroBuilderObject.getClass()), avroBuilderObject.getKeyRecord());
@@ -66,9 +66,9 @@ public class AvroBuilderKeyedSerializationSchema<T extends AvroBuilder> implemen
     @Override
     public byte[] serializeValue(T avroBuilderObject) {
 
-        if (this.keySerializer == null) {
-            this.keySerializer = new KafkaAvroSerializer();
-            this.keySerializer.configure(this.configs, false);
+        if (this.valueSerializer == null) {
+            this.valueSerializer = new KafkaAvroSerializer();
+            this.valueSerializer.configure(this.configs, false);
         }
         return this.valueSerializer.serialize(AvroBuilder.getTopicName(avroBuilderObject.getClass()), avroBuilderObject.getValueRecord());
     }
